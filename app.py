@@ -103,10 +103,12 @@ def fileZipper(dirName, zfName):
 @app.route('/pack/<string:part>&<string:version>&<string:userName>', methods=['POST','GET'] )
 def create_pack(part, version, userName):
     version = version.strip()
-    if not version.isalnum():
-        version = 'DRAFT'
+    #Creates a copy of the version variable to be used in file creation without effecting SQL query
+    version_file = version
+    if not version_file.isalnum():
+        version_file = 'DRAFT'
 
-    packAndGo = part + '_' + version + '.zip'
+    packAndGo = part + '_' + version_file + '.zip'
     tempDirRoot = 'temp/'
     copyDir = "/mnt/" + userName + '/pack_go/'
     tempDir = copyDir + 'temp'
