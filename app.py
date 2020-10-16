@@ -32,7 +32,8 @@ connect_string = 'DRIVER={{ODBC Driver 13 for SQL Server}};SERVER={server};PORT=
 parts = []
 
 url = 'http://partbatcher:Password01@192.168.1.XXX:8080/OpenKM/Download?uuid='
-
+idxUrl = 'http://192.168.1.XXX:8080/OpenKM/index?uuid='
+dldUrl = 'http://192.168.1.XXX:8080/OpenKM/Download?uuid='
 
 ''' Methods/functions '''
 
@@ -58,14 +59,12 @@ def getLinks(partNumber, versionNumber):
     cursor.execute(SQL_string)
     
     for row in cursor:
-        if 'http://192.168.1.XXX:8080/OpenKM/Download?uuid=' is row.LINK:
-            #"LINK" or whatever the SQL returned column is that containes link addresses to docs
-            row = row.LINK.replace('http://192.168.1.XXX:8080/OpenKM/Download?uuid=', url)
-            row = requests.get(row, allow_redirects=True)
-        else:
-            row = row.LINK.replace('http://192.168.1.XXX:8080/OpenKM/index?uuid=', url)
-            row = requests.get(row, allow_redirects=True)
-        print('Correct Links', row)
+        #"LINK" or whatever the SQL returned column is that containes link addresses to docs
+        row.LINK = row.LINK.replace(dldUrl, url)
+        row.LINK = row.LINK.replace(idxUrl, url)
+        row.LINK = row.LINK.replace(' ', '')
+        row = row.LINK.replace(url, url)
+        row = requests.get(row, allow_redirects=True)
         links.append(row)
     cursor.close()
     return links
